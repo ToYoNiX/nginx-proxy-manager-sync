@@ -1,0 +1,31 @@
+# Two real NPM instances for integration testing (spec 10.4).
+# Admin APIs are published on 127.0.0.1:18181 (master) and 127.0.0.1:18182 (backup).
+services:
+  npm-master:
+    image: jc21/nginx-proxy-manager:2.16.0
+    environment:
+      INITIAL_ADMIN_EMAIL: admin@example.com
+      INITIAL_ADMIN_PASSWORD: changeme123
+      DISABLE_IPV6: "true"
+    volumes:
+      - master-data:/data
+      - master-letsencrypt:/etc/letsencrypt
+    ports:
+      - "127.0.0.1:18181:81"
+  npm-backup:
+    image: jc21/nginx-proxy-manager:2.16.0
+    environment:
+      INITIAL_ADMIN_EMAIL: admin@example.com
+      INITIAL_ADMIN_PASSWORD: changeme123
+      DISABLE_IPV6: "true"
+    volumes:
+      - backup-data:/data
+      - backup-letsencrypt:/etc/letsencrypt
+    ports:
+      - "127.0.0.1:18182:81"
+
+volumes:
+  master-data:
+  master-letsencrypt:
+  backup-data:
+  backup-letsencrypt:

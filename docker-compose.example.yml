@@ -1,0 +1,16 @@
+services:
+  npm-sync:
+    container_name: npm-sync
+    image: ghcr.io/toyonix/npm-sync:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   # web UI and API; remove if not needed
+    volumes:
+      - ./config.yaml:/config/config.yaml:ro
+    environment:
+      - TZ=UTC
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

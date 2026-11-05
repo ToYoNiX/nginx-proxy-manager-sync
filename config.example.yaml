@@ -1,0 +1,57 @@
+# npm-sync configuration. Copy to config.yaml and mount it at
+# /config/config.yaml. Every setting can also be set from the environment
+# (see README); environment values override this file.
+
+master:
+  url: "http://npm-master.lan:81"
+  username: "npm-sync@example.com"   # dedicated NPM user, without 2FA
+  password: "changeme"
+
+backups:
+  - url: "http://npm-backup.lan:81"
+    username: "npm-sync@example.com"
+    password: "changeme"
+    # features:            # optional per-backup overrides
+    #   streams: false
+    # excludeDomains:      # added to the global list
+    #   - "backup-only.example.com"
+
+# Domain patterns never synced or touched. * matches any run of characters
+# (dots included), ? matches one character, case-insensitive.
+excludeDomains: []
+#  - "internal.example.com"
+#  - "*.lab.example.com"
+
+cron: "0 */12 * * *"      # empty disables scheduled runs
+runOnStart: true
+dryRun: false
+continueOnError: true
+allowEmptyMaster: false
+maxDeletes: 10            # 0 = no limit
+httpTimeout: 60s          # certificate upload can be slow
+
+features:
+  certificates: true
+  proxyHosts: true
+  accessLists: true
+  redirectionHosts: true
+  deadHosts: true         # 404 hosts
+  streams: true
+
+# Basic-auth passwords of access lists. NPM never returns them, so every
+# user of every access list on the master needs its password here; lists
+# with a missing or wrong password are not synced, and hosts that use them
+# are skipped.
+accessListPasswords: {}
+#  "Admin panels":
+#    alice: "s3cret"
+
+web:
+  port: 8080              # 0 disables the web UI and API
+  username: ""            # optional basic auth for the UI and /api/*
+  password: ""
+  metrics: false          # expose /metrics (Prometheus)
+
+log:
+  level: info             # debug | info | warn | error
+  format: console         # console | json

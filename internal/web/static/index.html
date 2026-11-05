@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>npm-sync</title>
+	<link rel="icon" href="logo.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="tabler.min.css">
+	<link rel="stylesheet" href="app.css">
+	<script src="theme.js"></script>
+</head>
+<body>
+<div class="page">
+	<header class="navbar navbar-expand-md d-print-none">
+		<div class="container-xl">
+			<a class="navbar-brand" href="#dashboard">
+				<img src="logo.svg" alt="" width="32" height="32" class="me-2">
+				npm-sync
+			</a>
+			<div class="navbar-nav flex-row order-md-last align-items-center gap-2">
+				<span id="run-state" class="badge d-none"></span>
+				<button id="theme-toggle" class="btn btn-ghost-secondary btn-icon" type="button" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
+					<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/></svg>
+				</button>
+			</div>
+		</div>
+	</header>
+	<header class="navbar-expand-md">
+		<div class="navbar">
+			<div class="container-xl">
+				<ul class="navbar-nav" id="nav">
+					<li class="nav-item"><a class="nav-link" href="#dashboard" data-page="dashboard"><span class="nav-link-title">Dashboard</span></a></li>
+					<li class="nav-item"><a class="nav-link" href="#objects" data-page="objects"><span class="nav-link-title">Objects</span></a></li>
+					<li class="nav-item"><a class="nav-link" href="#logs" data-page="logs"><span class="nav-link-title">Logs</span></a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<div class="page-wrapper">
+		<div class="container-xl">
+			<div id="alert" class="alert alert-danger mt-3 d-none" role="alert"></div>
+		</div>
+
+		<!-- Dashboard -->
+		<section id="page-dashboard" class="page-body" hidden>
+			<div class="container-xl">
+				<div class="row row-deck row-cards">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="row align-items-center g-3">
+									<div class="col">
+										<div class="text-secondary">Last run</div>
+										<div id="last-run" class="h3 m-0">—</div>
+										<div id="last-run-detail" class="text-secondary small"></div>
+									</div>
+									<div class="col">
+										<div class="text-secondary">Next run</div>
+										<div id="next-run" class="h3 m-0">—</div>
+										<div id="schedule" class="text-secondary small"></div>
+									</div>
+									<div class="col-auto d-flex gap-2 flex-wrap">
+										<button id="sync-now" class="btn btn-primary" type="button">Sync now</button>
+										<button id="sync-force" class="btn btn-outline-primary" type="button" title="Sends every configured access list password, for password changes that keep the same first character and length">Sync now (send passwords)</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="card">
+							<div class="card-header"><h3 class="card-title">Instances</h3></div>
+							<div class="table-responsive">
+								<table class="table table-vcenter card-table">
+									<thead><tr><th>Role</th><th>URL</th><th>Reachable</th><th>NPM version</th><th>Last run</th><th>Changes</th></tr></thead>
+									<tbody id="instances"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Objects -->
+		<section id="page-objects" class="page-body" hidden>
+			<div class="container-xl">
+				<div class="card">
+					<div class="card-header flex-wrap gap-2">
+						<h3 class="card-title me-auto">Objects</h3>
+						<select id="obj-backup" class="form-select w-auto" aria-label="Backup"></select>
+						<select id="obj-action" class="form-select w-auto" aria-label="Action">
+							<option value="">All actions</option>
+							<option>created</option><option>updated</option><option>deleted</option><option>unchanged</option>
+							<option>skipped</option><option>excluded</option><option>degraded</option><option>error</option>
+						</select>
+						<input id="obj-search" class="form-control w-auto" type="search" placeholder="Search…" aria-label="Search">
+					</div>
+					<div class="table-responsive">
+						<table class="table table-vcenter card-table">
+							<thead><tr><th>Type</th><th>Name / domains</th><th>Last action</th><th>Message</th><th>Expires</th><th>Last copied</th></tr></thead>
+							<tbody id="objects"></tbody>
+						</table>
+					</div>
+					<div id="objects-empty" class="card-body text-secondary" hidden>No objects. Results appear after the first run.</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Logs -->
+		<section id="page-logs" class="page-body" hidden>
+			<div class="container-xl">
+				<div class="card">
+					<div class="card-header flex-wrap gap-2">
+						<h3 class="card-title me-auto">Logs <span class="text-secondary small">(last 1000 lines)</span></h3>
+						<select id="log-level" class="form-select w-auto" aria-label="Minimum level">
+							<option value="debug">Debug and above</option>
+							<option value="info" selected>Info and above</option>
+							<option value="warn">Warnings and errors</option>
+							<option value="error">Errors only</option>
+						</select>
+						<button id="log-clear" class="btn btn-outline-danger" type="button">Clear</button>
+					</div>
+					<div class="table-responsive logs">
+						<table class="table table-sm card-table">
+							<tbody id="logs"></tbody>
+						</table>
+					</div>
+					<div id="logs-empty" class="card-body text-secondary" hidden>No log lines.</div>
+				</div>
+			</div>
+		</section>
+
+		<footer class="footer footer-transparent d-print-none">
+			<div class="container-xl text-secondary small">
+				npm-sync <span id="app-version"></span> · keeps backup Nginx Proxy Manager instances identical to the master
+			</div>
+		</footer>
+	</div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

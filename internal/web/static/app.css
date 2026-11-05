@@ -1,0 +1,7 @@
+.domain-name { font-family: var(--tblr-font-monospace); }
+.logs { max-height: 70vh; overflow-y: auto; }
+.logs td { font-family: var(--tblr-font-monospace); font-size: .8125rem; white-space: pre-wrap; word-break: break-word; vertical-align: top; }
+.logs td.log-time { white-space: nowrap; color: var(--tblr-secondary); width: 1%; }
+.logs td.log-level { white-space: nowrap; width: 1%; }
+.msg { max-width: 36rem; white-space: normal; }
+.counts .badge { margin-right: .25rem; }
